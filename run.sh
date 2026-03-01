@@ -3,10 +3,11 @@
 # Claude Marketing Susceptibility Eval - One-Command Runner
 #
 # Usage:
-#   ./run.sh              # Run both experiments (quick test: 5 runs each)
+#   ./run.sh              # Run all three experiments (quick test: 5 runs each)
 #   ./run.sh direct       # Run only the direct A/B experiment
 #   ./run.sh mcp          # Run only the MCP/tool-use experiment
-#   ./run.sh full         # Run full experiments (50 runs direct, 10 runs MCP)
+#   ./run.sh live         # Run only the live product experiment
+#   ./run.sh full         # Run full experiments (50 direct, 10 mcp, 20 live)
 #
 
 set -e
@@ -46,14 +47,16 @@ if ! python3 -c "import anthropic" 2>/dev/null; then
 fi
 
 # Parse arguments
-EXPERIMENT="${1:-both}"
+EXPERIMENT="${1:-all}"
 RUNS_DIRECT=5
 RUNS_MCP=5
+RUNS_LIVE=5
 
 if [ "$EXPERIMENT" = "full" ]; then
     RUNS_DIRECT=50
     RUNS_MCP=10
-    EXPERIMENT="both"
+    RUNS_LIVE=20
+    EXPERIMENT="all"
 fi
 
 # Run experiments
@@ -68,8 +71,13 @@ case "$EXPERIMENT" in
         echo ""
         python3 mcp_experiment.py --runs "$RUNS_MCP" --output results_mcp.csv
         ;;
-    both)
-        echo -e "${GREEN}Running Both Experiments...${NC}"
+    live)
+        echo -e "${GREEN}Running Live Product Experiment ($RUNS_LIVE runs per tactic)...${NC}"
+        echo ""
+        python3 live_experiment.py --runs "$RUNS_LIVE" --output results_live.csv
+        ;;
+    all)
+        echo -e "${GREEN}Running All Experiments...${NC}"
         echo ""
         echo "--- Direct A/B Experiment ($RUNS_DIRECT runs per variant) ---"
         echo ""
@@ -78,14 +86,19 @@ case "$EXPERIMENT" in
         echo "--- MCP Tool-Use Experiment ($RUNS_MCP runs per variant) ---"
         echo ""
         python3 mcp_experiment.py --runs "$RUNS_MCP" --output results_mcp.csv
+        echo ""
+        echo "--- Live Product Experiment ($RUNS_LIVE runs per tactic) ---"
+        echo ""
+        python3 live_experiment.py --runs "$RUNS_LIVE" --output results_live.csv
         ;;
     *)
-        echo "Usage: ./run.sh [direct|mcp|both|full]"
+        echo "Usage: ./run.sh [direct|mcp|live|all|full]"
         echo ""
-        echo "  direct  - Run direct A/B experiment only"
-        echo "  mcp     - Run MCP tool-use experiment only"
-        echo "  both    - Run both experiments (default, 5 runs each)"
-        echo "  full    - Run full experiments (50 direct, 10 MCP)"
+        echo "  direct  - Run direct A/B experiment only (synthetic products)"
+        echo "  mcp     - Run MCP tool-use experiment only (synthetic + tools)"
+        echo "  live    - Run live product experiment only (real products)"
+        echo "  all     - Run all three experiments (default, 5 runs each)"
+        echo "  full    - Run full experiments (50 direct, 10 MCP, 20 live)"
         exit 1
         ;;
 esac

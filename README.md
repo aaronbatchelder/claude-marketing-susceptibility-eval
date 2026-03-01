@@ -32,10 +32,11 @@ That's it. The script will:
 
 | Command | What it does | API calls |
 |---------|--------------|-----------|
-| `./run.sh` | Both experiments, 5 runs each | ~160 |
-| `./run.sh direct` | Direct A/B experiment only | ~80 |
+| `./run.sh` | All three experiments, 5 runs each | ~200 |
+| `./run.sh direct` | Direct A/B experiment only (synthetic products) | ~80 |
 | `./run.sh mcp` | MCP tool-use experiment only | ~70 |
-| `./run.sh full` | Full reproduction (50 direct + 10 MCP) | ~940 |
+| `./run.sh live` | Live product experiment (real brands) | ~40 |
+| `./run.sh full` | Full reproduction (50 direct + 10 MCP + 20 live) | ~1100 |
 
 ### Requirements
 
@@ -81,17 +82,17 @@ python mcp_experiment.py --runs 10 --output mcp_results.csv
 
 The scarcity tactic that works so well on humans completely backfires on AI. The agent interprets low stock as "unpopular" rather than "buy now."
 
-## Two Experiments
+## Three Experiments
 
-### Run 1: Direct A/B Testing (`experiment.py`)
+### Experiment 1: Direct A/B Testing (`experiment.py`)
 
-The agent sees two product options in a single prompt and chooses one. Tests 16 manipulation variants, 50 runs each.
+The agent sees two product options in a single prompt and chooses one. Tests 16 manipulation variants with **synthetic product names** (Denim Co., Urban Stitch).
 
 ```bash
 python experiment.py --runs 50 --output results.csv
 ```
 
-### Run 2: Agentic Tool Use (`mcp_experiment.py`)
+### Experiment 2: Agentic Tool Use (`mcp_experiment.py`)
 
 The agent uses tools to search, browse details, and purchase. Tests whether multi-step reasoning provides any defense.
 
@@ -100,6 +101,16 @@ python mcp_experiment.py --runs 10 --output mcp_results.csv
 ```
 
 **Result:** 90.0% susceptibility—only 3.8 percentage points lower than Run 1. Tool use provides no meaningful defense.
+
+### Experiment 3: Live Products (`live_experiment.py`)
+
+Same tactics, but tested against **real product data** (Levi's, Wrangler, Carhartt, etc.). Tactics are synthetically injected into real product info to isolate the manipulation variable.
+
+```bash
+python live_experiment.py --runs 20 --output live_results.csv
+```
+
+This tests: "Do the tactics that worked on fake products also work when the brand names and descriptions are real?"
 
 ## Modifying the Experiments
 
