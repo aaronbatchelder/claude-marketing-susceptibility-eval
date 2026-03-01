@@ -17,7 +17,7 @@ When given two identical products with different framing (same price, same specs
 
 ```bash
 # Clone the repo
-git clone https://github.com/YOUR_USERNAME/claude-marketing-susceptibility-eval.git
+git clone https://github.com/aaronbatchelder/claude-marketing-susceptibility-eval.git
 cd claude-marketing-susceptibility-eval
 
 # Install dependencies
@@ -151,7 +151,7 @@ If you use this in research:
   author = {Batchelder, Aaron},
   title = {Claude Marketing Susceptibility Eval},
   year = {2025},
-  url = {https://github.com/YOUR_USERNAME/claude-marketing-susceptibility-eval}
+  url = {https://github.com/aaronbatchelder/claude-marketing-susceptibility-eval}
 }
 ```
 
