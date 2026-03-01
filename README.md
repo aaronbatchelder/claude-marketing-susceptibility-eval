@@ -13,24 +13,52 @@ When given two identical products with different framing (same price, same specs
 - **[AI Agents Fall for Ads](https://www.aaronbatchelder.com/blog/ai-agents-fall-for-ads)** — Full results and analysis
 - **[The Ad Buyer of the Future](https://www.aaronbatchelder.com/blog/ad-buyer-of-the-future)** — Original hypothesis
 
-## Quick Start
+## Reproduce the Results
+
+### One-Command Setup
 
 ```bash
-# Clone the repo
+git clone https://github.com/aaronbatchelder/claude-marketing-susceptibility-eval.git
+cd claude-marketing-susceptibility-eval
+./run.sh
+```
+
+That's it. The script will:
+1. Check for your `ANTHROPIC_API_KEY` (prompts if not set)
+2. Install Python dependencies (`pip install -r requirements.txt`)
+3. Run both experiments with 5 runs per variant (quick sanity check)
+
+### Run Options
+
+| Command | What it does | API calls |
+|---------|--------------|-----------|
+| `./run.sh` | Both experiments, 5 runs each | ~160 |
+| `./run.sh direct` | Direct A/B experiment only | ~80 |
+| `./run.sh mcp` | MCP tool-use experiment only | ~70 |
+| `./run.sh full` | Full reproduction (50 direct + 10 MCP) | ~940 |
+
+### Requirements
+
+- Python 3.8+
+- Anthropic API key ([get one here](https://console.anthropic.com/))
+- ~$5-15 in API credits for full reproduction
+
+### Manual Setup (if you prefer)
+
+```bash
+# 1. Clone
 git clone https://github.com/aaronbatchelder/claude-marketing-susceptibility-eval.git
 cd claude-marketing-susceptibility-eval
 
-# Install dependencies
+# 2. Install dependencies
 pip install -r requirements.txt
 
-# Set your API key
+# 3. Set your API key
 export ANTHROPIC_API_KEY=your_key_here
 
-# Run a quick test (3 variants, 5 runs each = ~15 API calls)
-python experiment.py --runs 5 --categories anchoring position
-
-# Run the full experiment (16 variants, 50 runs each = 800 API calls)
-python experiment.py --runs 50 --output my_results.csv
+# 4. Run experiments
+python experiment.py --runs 50 --output results.csv
+python mcp_experiment.py --runs 10 --output mcp_results.csv
 ```
 
 ## What This Tests
