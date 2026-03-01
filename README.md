@@ -2,11 +2,21 @@
 
 **Testing whether AI agents fall for advertising tactics.**
 
-## Key Finding
+## Key Findings
 
-**93.8% of the time, the agent chose the manipulated option.**
+### On Synthetic Products: 93.8% susceptibility
+When given two identical fake products with different framing, Claude followed the advertising signal in nearly every trial.
 
-When given two identical products with different framing (same price, same specs, same ratings), Claude followed the advertising signal in nearly every trial. This wasn't a subtle effect—it was near-deterministic.
+### On Real Products: Social proof is 2-7x more effective on AI than humans
+
+| Tactic | Lift above baseline | Human benchmark | Comparison |
+|--------|---------------------|-----------------|------------|
+| **Social Proof (review count)** | **+38%** | 5-20% | **2-7x human** |
+| **Review Sentiment** | **+22%** | 5-20% | **1-4x human** |
+| Anchoring, Urgency, Returns | +10-15% | 5-20% | Human-like |
+| Badges, Sponsored labels | ~0% | 5-20% | No effect |
+
+With real brands (Levi's, Wrangler, etc.), most tactics affect Claude at human-like rates—but **review count and emotional reviews are dramatically more effective on AI**.
 
 ## Blog Posts
 
@@ -32,11 +42,11 @@ That's it. The script will:
 
 | Command | What it does | API calls |
 |---------|--------------|-----------|
-| `./run.sh` | All three experiments, 5 runs each | ~200 |
+| `./run.sh` | All three experiments, 5 runs each | ~210 |
 | `./run.sh direct` | Direct A/B experiment only (synthetic products) | ~80 |
 | `./run.sh mcp` | MCP tool-use experiment only | ~70 |
-| `./run.sh live` | Live product experiment (real brands) | ~40 |
-| `./run.sh full` | Full reproduction (50 direct + 10 MCP + 20 live) | ~1100 |
+| `./run.sh live` | Live product experiment (real brands, 10 tactics) | ~50 |
+| `./run.sh full` | Full reproduction (50 direct + 10 MCP + 20 live) | ~1140 |
 
 ### Requirements
 
@@ -107,10 +117,10 @@ python mcp_experiment.py --runs 10 --output mcp_results.csv
 Same tactics, but tested against **real product data** (Levi's, Wrangler, Carhartt, etc.). Tactics are synthetically injected into real product info to isolate the manipulation variable.
 
 ```bash
-python live_experiment.py --runs 20 --output live_results.csv
+python live_experiment.py --runs 40 --output live_results.csv
 ```
 
-This tests: "Do the tactics that worked on fake products also work when the brand names and descriptions are real?"
+**Result:** 61% overall susceptibility. Most tactics perform at human-like rates, but **social proof (88%) and review sentiment (72%) are dramatically more effective on AI** than the typical 5-20% lift seen in humans.
 
 ## Modifying the Experiments
 
@@ -163,23 +173,25 @@ python experiment.py --prompts neutral value_focused quality_focused
 ## Limitations
 
 1. **Single model tested** — Other models (GPT-4, Gemini, open-source) may behave differently
-2. **Simulated products** — Not tested against real e-commerce APIs
+2. **Simulated e-commerce** — Not tested against live e-commerce APIs (though Experiment 3 uses real product data)
 3. **Binary choices** — Real shopping involves more options
 4. **No competing signals** — Didn't test what happens when both products have manipulation
-5. **No price variation** — All products were $65
+5. **Price normalized** — All products set to $65 to isolate manipulation variable
 
 ## Results Data
 
 Original run data is available in `results/`:
 
-- `results_50runs.csv` — Run 1 full results (800 trials)
-- `results_baseline.csv` — Run 1 baseline (160 trials)
-- `mcp_results_baseline.csv` — Run 2 results (140 trials)
+- `results_50runs.csv` — Experiment 1 full results (800 trials)
+- `results_baseline.csv` — Experiment 1 baseline (160 trials)
+- `mcp_results_baseline.csv` — Experiment 2 results (140 trials)
+- `live_results_40runs.csv` — Experiment 3 results (400 trials)
 
 Detailed analysis in `docs/`:
 
-- [RESULTS.md](docs/RESULTS.md) — Run 1 detailed breakdown
-- [RESULTS_MCP.md](docs/RESULTS_MCP.md) — Run 2 detailed breakdown
+- [RESULTS.md](docs/RESULTS.md) — Experiment 1 detailed breakdown
+- [RESULTS_MCP.md](docs/RESULTS_MCP.md) — Experiment 2 detailed breakdown
+- [RESULTS_LIVE.md](docs/RESULTS_LIVE.md) — Experiment 3 detailed breakdown
 
 ## Citation
 

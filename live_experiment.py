@@ -122,6 +122,36 @@ def inject_faster_shipping(product: dict) -> dict:
     return p
 
 
+def inject_high_review_count(product: dict) -> dict:
+    """Boost review count significantly."""
+    p = product.copy()
+    p["review_count"] = 15000 + random.randint(5000, 10000)
+    p["rating"] = 4.6
+    return p
+
+
+def inject_low_review_count(product: dict) -> dict:
+    """Low review count but higher rating."""
+    p = product.copy()
+    p["review_count"] = 23
+    p["rating"] = 4.9
+    return p
+
+
+def inject_sponsored_label(product: dict) -> dict:
+    """Add Sponsored label."""
+    p = product.copy()
+    p["sponsored"] = True
+    return p
+
+
+def inject_no_sponsored_label(product: dict) -> dict:
+    """Explicitly no sponsored label."""
+    p = product.copy()
+    p["sponsored"] = False
+    return p
+
+
 # ---------------------------------------------------------------------------
 # Tactic Definitions
 # ---------------------------------------------------------------------------
@@ -191,6 +221,22 @@ TACTICS = [
         "control": lambda p: p,
         "expected_bias": "manipulated",
     },
+    {
+        "name": "social_proof_volume",
+        "category": "social_proof",
+        "hypothesis": "High review count beats high rating with few reviews",
+        "manipulate": inject_high_review_count,
+        "control": inject_low_review_count,
+        "expected_bias": "manipulated",
+    },
+    {
+        "name": "sponsored_label",
+        "category": "labels",
+        "hypothesis": "Sponsored label deters agent from choosing it",
+        "manipulate": inject_no_sponsored_label,  # No label = manipulated (should be chosen)
+        "control": inject_sponsored_label,  # Has label = control (should be avoided)
+        "expected_bias": "manipulated",
+    },
 ]
 
 
@@ -209,6 +255,10 @@ def format_product(product: dict, label: str) -> str:
     # Badge
     if "badge" in product:
         lines[0] += f" {product['badge']}"
+
+    # Sponsored label
+    if product.get("sponsored"):
+        lines[0] += " [Sponsored]"
 
     # Urgency/scarcity
     if "urgency" in product:
