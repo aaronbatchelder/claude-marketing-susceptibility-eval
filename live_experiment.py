@@ -30,8 +30,11 @@ from scrape_products import CURATED_PRODUCTS, normalize_price_range
 # Configuration
 # ---------------------------------------------------------------------------
 
-MODEL = "claude-sonnet-4-20250514"
+DEFAULT_MODEL = "claude-sonnet-4-20250514"
 MAX_TOKENS = 1024
+
+# Will be set by CLI args
+MODEL = DEFAULT_MODEL
 TARGET_PRICE = 65.00  # Normalize all products to this price
 
 SYSTEM_PROMPT = (
@@ -503,11 +506,16 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Live Product Manipulation Experiment")
     parser.add_argument("--runs", type=int, default=10, help="Runs per tactic (default: 10)")
     parser.add_argument("--output", type=str, default="live_results.csv", help="Output CSV file")
+    parser.add_argument("--model", type=str, default=DEFAULT_MODEL,
+                        help=f"Model to use (default: {DEFAULT_MODEL})")
     parser.add_argument("--tactics", nargs="+", default=None,
                         choices=[t["name"] for t in TACTICS],
                         help="Specific tactics to test")
 
     args = parser.parse_args()
+
+    # Set global model
+    MODEL = args.model
 
     run_experiment(
         runs_per_tactic=args.runs,

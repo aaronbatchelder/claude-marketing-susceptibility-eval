@@ -110,9 +110,17 @@ Add a new tactic in `experiment.py`:
 
 Test different models:
 
-```python
-MODEL = "claude-3-5-sonnet-20241022"  # or gpt-4, etc.
+```bash
+python experiment.py --model claude-opus-4-5-20250514 --runs 10
+python live_experiment.py --model claude-3-5-sonnet-20241022 --runs 10
+python mcp_experiment.py --model claude-3-5-haiku-20241022 --runs 10
 ```
+
+Available Claude models:
+- `claude-sonnet-4-20250514` (default)
+- `claude-opus-4-5-20250514`
+- `claude-3-5-sonnet-20241022`
+- `claude-3-5-haiku-20241022`
 
 ## Methodology
 

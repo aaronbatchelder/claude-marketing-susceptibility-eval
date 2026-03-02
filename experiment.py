@@ -36,8 +36,11 @@ from typing import Optional
 # Configuration
 # ---------------------------------------------------------------------------
 
-MODEL = "claude-sonnet-4-20250514"
+DEFAULT_MODEL = "claude-sonnet-4-20250514"
 MAX_TOKENS = 1024
+
+# Will be set by CLI args
+MODEL = DEFAULT_MODEL
 
 SYSTEM_PROMPTS = {
     "neutral": (
@@ -615,6 +618,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Black Jeans Test — AI Agent Ad Susceptibility")
     parser.add_argument("--runs", type=int, default=10, help="Runs per variant (default: 10)")
     parser.add_argument("--output", type=str, default="results.csv", help="Output CSV file")
+    parser.add_argument("--model", type=str, default=DEFAULT_MODEL,
+                        help=f"Model to use (default: {DEFAULT_MODEL})")
     parser.add_argument(
         "--prompts",
         nargs="+",
@@ -639,6 +644,9 @@ if __name__ == "__main__":
 
     if args.all_prompts:
         args.prompts = list(SYSTEM_PROMPTS.keys())
+
+    # Set global model
+    MODEL = args.model
 
     run_experiment(
         runs_per_variant=args.runs,
